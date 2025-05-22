@@ -34,6 +34,7 @@ dev = [
     "pytest",
     "responses",
 ]
+obstore = ["obstore"]
 
 [project.scripts]
 planetarycomputer = "planetary_computer.scripts.cli:app"
