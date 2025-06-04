@@ -8,11 +8,12 @@ if TYPE_CHECKING:
     import sys
 
     from obstore.store import (
-        AzureStore,
         AzureConfig,
+        AzureCredentialProvider,
+        AzureSASToken,
+        AzureStore,
         ClientConfig,
         RetryConfig,
-        AzureSASToken,
     )
 
     if sys.version_info >= (3, 11):
@@ -21,7 +22,7 @@ if TYPE_CHECKING:
         from typing_extensions import Unpack
 
 
-def get_obstore_store(  # type: ignore[misc] # overlap with kwargs
+def get_obstore(  # type: ignore[misc] # overlap with kwargs
     account_name: str,
     container_name: str,
     *,
@@ -29,6 +30,7 @@ def get_obstore_store(  # type: ignore[misc] # overlap with kwargs
     config: AzureConfig | None = None,
     client_options: ClientConfig | None = None,
     retry_config: RetryConfig | None = None,
+    credential_provider: AzureCredentialProvider | None = None,
     **kwargs: Unpack[AzureConfig],  # type: ignore # noqa: PGH003 (container_name key overlaps with positional arg)
 ) -> AzureStore:
     try:
@@ -39,12 +41,14 @@ def get_obstore_store(  # type: ignore[misc] # overlap with kwargs
             "the optional dependency 'obstore'."
         ) from e
 
-    def credential_provider() -> AzureSASToken:
+    def default_credential_provider() -> AzureSASToken:
         token = get_token(account_name, container_name)
         return {
             "sas_token": token.token,
             "expires_at": token.expiry,
         }
+
+    credential_provider = credential_provider or default_credential_provider
 
     return obstore.store.AzureStore(
         account_name=account_name,
