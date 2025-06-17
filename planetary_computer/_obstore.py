@@ -31,7 +31,7 @@ def get_obstore(  # type: ignore[misc] # overlap with kwargs
     client_options: ClientConfig | None = None,
     retry_config: RetryConfig | None = None,
     credential_provider: AzureCredentialProvider | None = None,
-    **kwargs: Unpack[AzureConfig],  # type: ignore # noqa: PGH003 (container_name key overlaps with positional arg) # noqa: E501
+    **kwargs: Unpack[AzureConfig],  # type: ignore # noqa
 ) -> AzureStore:
     try:
         import obstore
